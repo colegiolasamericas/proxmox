@@ -4,6 +4,14 @@
 # Autor: Kernel
 # Licencia: MIT
 
+# Valores por defecto
+CTID=${CTID:-505}
+PCT_OSTYPE=${PCT_OSTYPE:-debian}
+# Agrega aquí otras variables que el script use, con valores por defecto
+
+echo "Usando CTID = $CTID"
+echo "Usando PCT_OSTYPE = $PCT_OSTYPE"
+
 # Configuración de colores para la salida en consola
 YW=$(echo "\033[33m")
 YWB=$(echo "\033[93m")
