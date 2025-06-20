@@ -25,24 +25,24 @@ chmod -R 775 "$MEDIA_DIR"
 
 # === Descargar plantilla si no existe ===
 echo "📦 Verificando plantilla..."
-if ! pct template $CT_TEMPLATE > /dev/null 2>&1; then
-    echo "📥 Descargando plantilla $CT_TEMPLATE manualmente..."
 
-    # Definir directorio base de templates
-    TEMPLATE_DIR="/var/lib/vz/template/cache"
+# Variables (ajustadas para .tar.zst)
+TEMPLATE_DIR="/var/lib/vz/template/cache"
+TEMPLATE_NAME="ubuntu-22.04-standard_22.04-1_amd64"
+TEMPLATE_EXT=".tar.zst"
+TEMPLATE_URL="https://download.proxmox.com/apltemplate/tar.zst/${TEMPLATE_NAME}${TEMPLATE_EXT}" 
+
+if [ ! -f "${TEMPLATE_DIR}/${TEMPLATE_NAME}${TEMPLATE_EXT}" ]; then
+    echo "📥 Descargando plantilla ${TEMPLATE_NAME}..."
     mkdir -p "$TEMPLATE_DIR"
-
-    # URL oficial de descarga de plantillas de Proxmox
-    TEMPLATE_URL="https://download.proxmox.com/apltemplate/tar.gz/${CT_TEMPLATE}.tar.gz" 
-
-    # Descargar y descomprimir
-    curl -fsSL "$TEMPLATE_URL" | tar xzf - -C "$TEMPLATE_DIR"
+    curl -fsSL "$TEMPLATE_URL" -o "${TEMPLATE_DIR}/${TEMPLATE_NAME}${TEMPLATE_EXT}"
     
-    echo "✅ Plantilla descargada y descomprimida en $TEMPLATE_DIR"
+    echo "_unpacking..."
+    tar --use-compress-program=unzstd -xf "${TEMPLATE_DIR}/${TEMPLATE_NAME}${TEMPLATE_EXT}" -C "$TEMPLATE_DIR"
+    echo "✅ Plantilla descargada y descomprimida."
 else
-    echo "✅ La plantilla ya existe."
+    echo "✅ La plantilla ya está disponible."
 fi
-
 # === Crear contenedor LXC ===
 echo "🧱 Creando contenedor LXC (ID: $CT_ID)..."
 if pct status $CT_ID &>/dev/null; then
