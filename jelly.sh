@@ -26,8 +26,21 @@ chmod -R 775 "$MEDIA_DIR"
 # === Descargar plantilla si no existe ===
 echo "📦 Verificando plantilla..."
 if ! pct template $CT_TEMPLATE > /dev/null 2>&1; then
-    echo "📥 Descargando plantilla $CT_TEMPLATE..."
-    pct download $CT_TEMPLATE
+    echo "📥 Descargando plantilla $CT_TEMPLATE manualmente..."
+
+    # Definir directorio base de templates
+    TEMPLATE_DIR="/var/lib/vz/template/cache"
+    mkdir -p "$TEMPLATE_DIR"
+
+    # URL oficial de descarga de plantillas de Proxmox
+    TEMPLATE_URL="https://download.proxmox.com/apltemplate/tar.gz/${CT_TEMPLATE}.tar.gz" 
+
+    # Descargar y descomprimir
+    curl -fsSL "$TEMPLATE_URL" | tar xzf - -C "$TEMPLATE_DIR"
+    
+    echo "✅ Plantilla descargada y descomprimida en $TEMPLATE_DIR"
+else
+    echo "✅ La plantilla ya existe."
 fi
 
 # === Crear contenedor LXC ===
